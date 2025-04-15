@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<title>To-Do List with Progress Tracking</title>
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+max-width: 800px;
+margin: 0 auto;
+padding: 20px;
+background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+min-height: 100vh;
+}
+
+.container {
+background: white;
+border-radius: 15px;
+padding: 2rem;
+box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.menu {
+display: flex;
+gap: 15px;
+margin-bottom: 2rem;
+padding: 10px;
+border-radius: 10px;
+background: #f8f9fa;
+}
+
+.menu button {
+background: none;
+border: none;
+padding: 12px 20px;
+font-weight: 600;
+color: #6c757d;
+cursor: pointer;
+transition: 0.3s;
+position: relative;
+overflow: hidden;
+}
+
+.menu button.active {
+color: #495057;
+}
+
+.menu button::before {
+content: '';
+position: absolute;
+bottom: 0;
+left: 50%;
+width: 0;
+height: 2px;
+background: #dad71e;
+transition: 0.3s;
+transform: translateX(-50%);
+}
+
+.menu button:hover::before {
+width: 100%;
+}
+
+.input-group {
+display: flex;
+gap: 15px;
+margin-bottom: 2rem;
+}
+
+#taskInput {
+flex: 1;
+padding: 14px;
+border: 2px solid #e9ecef;
+border-radius: 8px;
+font-size: 16px;
+transition: 0.3s;
+}
+
+#taskInput:focus {
+border-color: #4CAF50;
+outline: none;
+box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+#addTaskBtn {
+background: linear-gradient(90deg, #f3bb05, #d60f47);
+border: none;
+color: white;
+padding: 14px 28px;
+border-radius: 30px;
+cursor: pointer;
+font-weight: bold;
+transition: 0.3s;
+box-shadow: 0 4px 10px rgba(175, 158, 76, 0.3);
+}
+
+#addTaskBtn:hover {
+transform: rotate(-5deg) scale(1.05);
+box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+#tasksContainer {
+position: relative;
+}
+
+.task-item {
+background: #f8f9fa;
+padding: 1rem;
+border-radius: 10px;
+margin: 10px 0;
+display: flex;
+align-items: center;
+gap: 15px;
+opacity: 0;
+transform: translateY(20px);
+animation: reveal 0.5s forwards;
+}
+
+@keyframes reveal {
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.status-dropdown {
+margin-left: 10px;
+padding: 8px 12px;
+border-radius: 6px;
+border: 1px solid #ddd;
+background: white;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.status-dropdown:hover {
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.status-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+flex-shrink: 0;
+transition: 0.3s;
+}
+
+.todo .status-dot { background: #2196F3; }
+.inprogress .status-dot { background: #FFA726; }
+.done .status-dot { background: #4CAF50; }
+
+.delete-btn {
+background: #ff5252;
+color: white;
+border: none;
+border-radius: 6px;
+padding: 8px 12px;
+cursor: pointer;
+transition: 0.3s;
+margin-left: 10px;
+}
+
+.delete-btn:hover {
+background: #ff0000;
+transform: scale(1.05);
+}
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    
+    .menu {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .menu button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #addTaskBtn {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .task-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .status-dropdown, .delete-btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    
+    .task-item > div {
+        width: 100%;
+        word-break: break-word;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    #taskInput {
+        padding: 12px;
+    }
+}
+.footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+        color: #56585a;
+        font-size: 0.9rem;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .social-links a {
+        color: #495057;
+        font-size: 1.2rem;
+        transition: 0.3s;
+    }
+    
+    .social-links a:hover {
+        color: #000000;
+        transform: translateY(-2px);
+    }
+    
+    .developer {
+        font-weight: 600;
+        color: #000000;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="menu">
+<button class="active" onclick="filterTasks('all')">All</button>
+<button onclick="filterTasks('todo')">To Do</button>
+<button onclick="filterTasks('inprogress')">In Progress</button>
+<button onclick="filterTasks('done')">Done</button>
+</div>
+
+<div class="input-group">
+<input type="text" id="taskInput" placeholder="Enter your task here...">
+<button id="addTaskBtn" onclick="addTask()">+</button>
+</div>
+
+<div id="tasksContainer"></div>
+</div>
+
+<script>
+let currentFilter = 'all';
+
+document.addEventListener('DOMContentLoaded', () => {
+loadTasks();
+// Add animation delay for initial load
+setTimeout(() => {
+document.querySelectorAll('.task-item').forEach((task, index) => {
+task.style.animationDelay = `${index * 0.1}s`;
+});
+}, 50);
+});
+
+function addTask() {
+const taskInput = document.getElementById('taskInput');
+const taskText = taskInput.value.trim();
+
+if (!taskText) {
+alert('Please enter a task!');
+return;
+}
+
+const task = {
+id: Date.now(),
+content: taskText,
+status: 'todo',
+timestamp: new Date().toISOString()
+};
+
+const existingTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+existingTasks.push(task);
+localStorage.setItem('tasks', JSON.stringify(existingTasks));
+
+taskInput.value = '';
+loadTasks();
+}
+
+function loadTasks() {
+const container = document.getElementById('tasksContainer');
+container.innerHTML = '';
+
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+if (currentFilter !== 'all') {
+tasks = tasks.filter(task => task.status === currentFilter);
+}
+
+tasks.forEach((task, index) => {
+const taskDiv = document.createElement('div');
+taskDiv.className = `task-item ${task.status}`;
+taskDiv.style.animationDelay = `${index * 0.1}s`;
+taskDiv.innerHTML = `
+<span class="status-dot"></span>
+<div>${task.content}</div>
+<select class="status-dropdown" onchange="updateStatus(${task.id}, this)">
+<option value="todo" ${task.status === 'todo' ? 'selected' : ''}>To Do</option>
+<option value="inprogress" ${task.status === 'inprogress' ? 'selected' : ''}>In Progress</option>
+<option value="done" ${task.status === 'done' ? 'selected' : ''}>Done</option>
+</select>
+<button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+`;
+container.appendChild(taskDiv);
+});
+}
+
+function updateStatus(id, dropdown) {
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+const index = tasks.findIndex(task => task.id === id);
+tasks[index].status = dropdown.value;
+localStorage.setItem('tasks', JSON.stringify(tasks));
+loadTasks();
+}
+
+function deleteTask(id) {
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+tasks = tasks.filter(task => task.id !== id);
+localStorage.setItem('tasks', JSON.stringify(tasks));
+loadTasks();
+}
+
+function filterTasks(filter) {
+currentFilter = filter;
+document.querySelectorAll('.menu button').forEach(btn => {
+btn.classList.toggle('active', btn.getAttribute('onclick').includes(filter));
+});
+loadTasks();
+}
+
+</script>
+<div class="footer">
+    <div class="social-links">
+        <a href="https://x.com/AbdelfattahKH1" title="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://github.com/abdelfattahKGD" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/abdelfattah-khaled" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="https://www.instagram.com/abdelfattahk1/" title="Instagram"><i class="fab fa-instagram"></i></a>
+    </div>
+    <div>Developed by <span class="developer">Abdelfattah Khaled</span></div>
+</div>
+
+</body>
+</html>
